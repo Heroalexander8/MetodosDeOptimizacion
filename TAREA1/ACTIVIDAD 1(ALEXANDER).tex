@@ -1,0 +1,72 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{hyperref} 
+\geometry{margin=1in}
+\setstretch{1.3}
+\title{Conceptos Fundamentales: Variable, Función y Restricción}
+\author{Curso: Métodos de Optimización \\
+	Universidad Nacional del Altiplano, Puno \\
+	Estudiante: ALEXANDER QUISPE HOLGUIN}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section*{Conceptos Fundamentales Avanzados en clase}
+	
+	\subsection*{Variable}
+	Una \textbf{variable} es un símbolo que se utiliza para representar un valor desconocido dentro de un modelo matemático. En el ámbito de la optimización, las variables juegan un rol esencial, ya que sus valores pueden modificarse dentro de ciertos límites para encontrar la mejor solución posible, ya sea minimizando costos o maximizando beneficios.
+	
+	\subsection*{Función}
+	Una \textbf{función} establece una relación entre un conjunto de datos de entrada (variables independientes) y un resultado (variable dependiente). En optimización, se destaca la \textit{función objetivo}, que refleja el valor que se desea optimizar, como por ejemplo el costo total, el ingreso generado o el tiempo requerido para una tarea.
+	
+	\subsection*{Restricción}
+	Las \textbf{restricciones} son condiciones que limitan el comportamiento del modelo. Estas se formulan mediante igualdades o desigualdades y definen el conjunto de valores permitidos para las variables. Son indispensables, ya que aseguran que la solución sea factible dentro de un contexto realista.
+	
+	\section*{Variable Seleccionada: Costo}
+	
+	\subsection*{Estructura y medición de la variable ``Costo''}
+	
+	\begin{itemize}
+		\item \textbf{Estructura}: El costo se puede clasificar en diferentes categorías según el contexto del problema, tales como costos fijos, variables, de transporte, de producción o de almacenamiento.
+		
+		\item \textbf{Medición}: Generalmente, el costo se cuantifica en términos monetarios (por ejemplo, en soles). Dentro de un modelo de optimización, se incorpora en la función objetivo, que suele buscar su minimización. Por ejemplo:
+		
+		\[
+		\text{Minimizar } Z = 5x_1 + 3x_2
+		\]
+		
+		donde \(x_1\) y \(x_2\) son variables que representan cantidades de bienes o recursos, mientras que 5 y 3 indican sus respectivos costos unitarios.
+	\end{itemize}
+	
+	\subsection*{Ejemplo aplicado}
+	
+	\textbf{Problema de transporte}: Una empresa necesita distribuir productos desde dos centros de distribución hacia tres puntos de venta. La meta es reducir al mínimo el costo total de envío.
+	
+	\begin{itemize}
+		\item \textbf{Variables}: Número de unidades enviadas desde cada centro hacia cada punto de venta.
+		\item \textbf{Función objetivo}: Minimizar el gasto total en transporte.
+		\item \textbf{Restricciones}: La capacidad disponible en los centros de distribución y la demanda específica de cada tienda.
+	\end{itemize}
+	
+	\section*{Referencias Bibliográficas}
+	
+	\begin{enumerate}[label={[\arabic*]}]
+		\item Hillier, F. S., \& Lieberman, G. J. (2010). \textit{Introducción a la investigación de operaciones}. McGraw-Hill.
+		\item Taha, H. A. (2017). \textit{Operations Research: An Introduction}. Pearson.
+		\item Winston, W. L. (2004). \textit{Operations Research: Applications and Algorithms}. Duxbury Press.
+		\item Terrero Huerta, K. Y., et al. (2024). Programación lineal aplicada a la optimización de rutas de transporte en SXR-POLYMERS. \textit{Investigación y Sociedad}, 18, 9–18. Disponible en: \\
+		\url{https://is.uv.mx/index.php/IS/article/view/2889}
+		\item Cepeda Silva, P. M., \& Cáceres, P. (2023). Modelo matemático en la optimización del costo del transporte pesado de carga agrícola. \textit{Minerva Journal}, 5(13), 17–26. Disponible en: \\
+		\url{https://dialnet.unirioja.es/descarga/articulo/9425465.pdf}
+		\item Hatzenbühler, J., Jenelius, E., Gidófalvi, G., \& Cats, O. (2022). Modular Vehicle Routing for Combined Passenger and Freight Transport. \textit{arXiv preprint}. Disponible en: \\
+		\url{https://arxiv.org/abs/2209.01461}
+	\end{enumerate}
+	
+\end{document}
+

@@ -1,0 +1,163 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{geometry} % Para modificar márgenes
+\usepackage{fancyhdr} % Para encabezados
+\usepackage{hyperref} % Para enlaces en las referencias
+
+% Definir márgenes
+\geometry{top=2cm, bottom=2cm, left=2.5cm, right=2.5cm}
+
+% Definir encabezado
+\pagestyle{fancy}
+\fancyhead[L]{Método de Optimización} % Encabezado izquierdo
+\fancyhead[R]{Universidad Nacional del Altiplano - FINESI} % Encabezado derecho
+
+% Título del documento
+\title{Programación Lineal: Método Gráfico}
+\author{Integrantes: \\Jefry erick Quispe Ramos\\ Jimena Yessica Paricela Yana\\ Daniel Mamani Huata\\ Alezxander Quispe Holguin } 
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    En este trabajo se aborda la optimización del tiempo de estudio de un estudiante universitario utilizando el método gráfico de programación lineal. Se considera un conjunto de restricciones como el tiempo disponible para estudiar, las horas de clases, y las horas dedicadas al sueño y otras actividades. A través de este método se determina la cantidad óptima de horas de estudio para maximizar la productividad del estudiante.
+\end{abstract}
+
+\section*{Introducción}
+
+La programación lineal es una técnica matemática utilizada para optimizar una función objetivo, sujeta a un conjunto de restricciones lineales. El \textbf{método gráfico} es una herramienta visual que se aplica cuando hay solo dos variables.
+
+\section*{Pasos del Método Gráfico}
+
+\begin{enumerate}
+    \item Formular la función objetivo.
+    \item Expresar las restricciones como desigualdades.
+    \item Graficar las restricciones en el plano cartesiano.
+    \item Determinar la región factible (intersección de todas las restricciones).
+    \item Evaluar la función objetivo en los vértices de la región factible.
+    \item Escoger la solución que maximiza o minimiza la función objetivo.
+\end{enumerate}
+
+\section*{Planteamiento del problema}
+Se desea maximizar el tiempo que un estudiante univerisitario puede dedicar al estudio durante el dia, considerando ciertas restricciones basicas como el tiempo de sueño alimentacion, clases y recreación.
+
+\section*{Variables}
+
+\begin{itemize}
+    \item x: Horas de estudio en casa.
+    \item y: Horas de estudio en la universidad.
+\end{itemize}
+
+\section*{Funcion Objetivo}
+La función objetivo es maximizar el total de horas de estudio:
+\[
+Maximizar Z = ax + by
+\]
+
+\section*{Restricciones}
+Según fuentes consultadas:
+\begin{enumerate}
+    \item Un estudiante no debería estudiar más de 5 a 6 horas efectivas en casa por productividad (\author{fuente: Universidad de Harvard - Estrategias de estudio efectivo. Estudiar durante muchas horas sin descanso no es efectivo. Es mejor estudiar en bloques cortos y tomar descansos regulares. Esto mejora la concentración y la retención a largo plazo}).
+    \item La universidad proporciona como máximo 6 horas de clases al día.
+    \item El día tiene 24 horas, de los cuales al menos 7 se destinan al sueño, 4 a la alimentación, higiene, transporte y recreación. Quedan 13 horas disponibles.
+\end{enumerate}
+Entonces, las restricciones quedan así:
+
+\[
+\begin{aligned}
+x + y &\leq 13 \ (Tiempo disponible)\\ 
+x &\leq 5 \ (Límite de estudi en casa)\\
+y &\leq 6 \ (Maximo de horas en clase) \\
+x, y &\geq 0  \ (No puede haber tiempo negativo)
+\end{aligned}
+\]
+
+\section*{Ejemplo}
+
+Maximizar:
+\[
+Z = 3x + 2y
+\]
+Sujeto a:
+\[
+\begin{aligned}
+x + y &\leq 4 \\
+x &\leq 2 \\
+y &\leq 3 \\
+x, y &\geq 0
+\end{aligned}
+\]
+
+\section*{Gráfica de la Región Factible}
+
+\begin{center}
+\begin{tikzpicture}
+    \begin{axis}[
+        axis lines = middle,
+        xlabel = $x$, ylabel = $y$,
+        xmin=0, xmax=5, ymin=0, ymax=5,
+        grid=both,
+        legend style={at={(1,1)}, anchor=north east}
+    ]
+    % Restricciones
+    \addplot[domain=0:4, samples=100, thick, red] {4 - x};
+    \addlegendentry{$x + y \leq 4$}
+
+    \addplot[domain=0:2, samples=2, thick, blue] {3};
+    \addlegendentry{$y \leq 3$}
+
+    \addplot[domain=0:3, samples=2, thick, green] {0};
+    \addlegendentry{$x \leq 2$}
+
+    % Región factible (relleno)
+    \addplot [
+        domain=0:2,
+        samples=100,
+        fill=yellow,
+        fill opacity=0.3
+    ]
+    {min(4 - x, 3)} \closedcycle;
+
+    \end{axis}
+\end{tikzpicture}
+\end{center}
+
+\section*{Solución}
+
+Vértices de la región factible:
+
+\begin{itemize}
+    \item (0, 0): $Z = 0$
+    \item (0, 3): $Z = 3 \cdot 0 + 2 \cdot 3 = 6$
+    \item (1, 3): $Z = 3 \cdot 1 + 2 \cdot 3 = 9$
+    \item (2, 2): $Z = 3 \cdot 2 + 2 \cdot 2 = 10$
+    \item (2, 0): $Z = 3 \cdot 2 + 2 \cdot 0 = 6$
+\end{itemize}
+
+\textbf{Máximo valor:} $Z = \boxed{10}$ en el punto $(2,2)$.
+
+\section*{Conclusiones:}
+
+El modelo de programación lineal aplicado en este caso demuestra que un estudiante universitario, considerando sus restricciones de tiempo, puede dedicar un máximo de 10 horas diarias al estudio sin comprometer otras actividades esenciales para su bienestar, como el sueño y la alimentación. Este equilibrio es fundamental para maximizar la productividad sin afectar la salud.
+
+Además, este modelo puede ser útil en la planificación de tiempos de estudio de manera óptima, considerando variables como el tiempo de clases, las horas disponibles para otras actividades y la necesidad de descanso. Aunque el modelo aquí presentado es relativamente simple, se podría expandir para incluir otras variables, como el rendimiento académico y los efectos del estrés o la fatiga.
+
+En términos prácticos, este tipo de modelado ayuda a los estudiantes a gestionar su tiempo de manera más eficiente, tomando decisiones informadas sobre cómo organizar su jornada. Sin embargo, es importante tener en cuenta que los resultados dependen de los valores establecidos en las restricciones, por lo que un ajuste adecuado de los parámetros puede ofrecer soluciones más personalizadas para diferentes contextos.
+
+\section*{Referencias}
+
+\begin{itemize}
+    \item Universidad de Harvard. (2023). \textit{Estrategias de estudio efectivo}. Recuperado de: \url{https://www.harvard.edu/estrategias-estudio-efectivo}
+    \item Smith, J. (2020). \textit{Programación lineal: Una introducción práctica}. Editorial Técnica, pp. 45-67.
+    \item López, A., & García, M. (2019). \textit{Optimización de tiempos en la vida estudiantil: Aplicación de la programación lineal}. Revista de Matemáticas Aplicadas, 34(2), 123-135.
+\end{itemize}
+
+\end{document}
