@@ -5,7 +5,7 @@ Aquí encontrarás el desarrollo de ejercicios, tareas, proyectos y apuntes real
 
 ---
 
-## 💡 Información del Curso
+## Información del Curso
 
 - **Facultad:** Facultad de Ingeniería Estadística e Informática
 - **Curso:** Métodos de Optimización
@@ -17,6 +17,6 @@ Aquí encontrarás el desarrollo de ejercicios, tareas, proyectos y apuntes real
 
 ---
 
-## 🎯 Objetivo del Repositorio
+## Objetivo del Repositorio
 
 Compartir mi proceso de aprendizaje, fortalecer mis habilidades en la resolución de problemas de optimización, y proporcionar recursos útiles para otros estudiantes interesados en el área.
