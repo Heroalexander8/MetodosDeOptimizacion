@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Caramelos: Sobrevivientes</title>
+    <!-- Google Fonts para una tipografía divertida -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Enlace a tu archivo CSS externo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <h1>🍬 Juego de Caramelos: Sobrevivientes 🍭</h1>
+            <p>¡Forma grupos, intercambia dulces y sé el primero en conseguir el objetivo!</p>
+        </header>
+
+        <main class="game-content">
+            <section class="card player-management">
+                <h2>👥 Gestión de Jugadores</h2>
+                <div class="controls">
+                    <button id="generatePlayersBtn" class="btn btn-primary">Generar 30 Jugadores Automáticos</button>
+                    <div class="manual-add">
+                        <input type="text" id="playerNameInput" placeholder="Nombre del Jugador">
+                        <button id="addPlayerBtn" class="btn btn-secondary">Agregar Jugador Manualmente</button>
+                    </div>
+                </div>
+                <div class="player-list-container">
+                    <h3>Lista de Jugadores (<span id="playerCount">0</span>)</h3>
+                    <ul id="playerList" class="player-list">
+                        <!-- Jugadores se cargarán aquí -->
+                    </ul>
+                </div>
+            </section>
+
+            <section class="card game-setup">
+                <h2>🎲 Configuración del Juego</h2>
+                <div class="timer-display">
+                    <h3>Tiempo Restante: <span id="gameTimer">5:00</span></h3>
+                </div>
+                <div class="game-controls">
+                    <button id="startGameBtn" class="btn btn-success">Iniciar Juego</button>
+                    <button id="stopGameBtn" class="btn btn-danger" disabled>Detener Juego</button>
+                    <button id="resetGameBtn" class="btn btn-warning">Reiniciar Juego</button>
+                </div>
+            </section>
+
+            <section class="card group-formation">
+                <h2>🤝 Formación de Grupos</h2>
+                <div id="groupsContainer" class="groups-grid">
+                    <!-- Grupos se cargarán aquí -->
+                </div>
+            </section>
+
+            <section class="card exchange-log-section">
+                <h2>🔄 Log de Intercambios</h2>
+                <div id="globalExchangeLog" class="exchange-log-list-global">
+                    <!-- El log de intercambios global se mostrará aquí -->
+                    <p class="info-message">Los intercambios aparecerán aquí una vez que el juego comience.</p>
+                </div>
+            </section>
+
+            <section class="card game-results">
+                <h2>🏆 Resultados y Sobrevivientes</h2>
+                <div id="resultsContainer">
+                    <!-- Resultados se mostrarán aquí -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Enlace a tu archivo JavaScript externo -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
