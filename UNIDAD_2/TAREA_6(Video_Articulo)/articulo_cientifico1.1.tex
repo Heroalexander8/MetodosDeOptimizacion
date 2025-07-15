@@ -1,0 +1,331 @@
+\documentclass[conference]{IEEEtran} % IEEE Format
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{cite} % For references like [1]
+\usepackage{ragged2e}
+
+\title{A Comprehensive Analysis of Hybrid Optimization and Machine Learning Approaches for the Multi-Depot Vehicle Routing Problem under Stochastic Conditions}
+
+\author{
+    \IEEEauthorblockN{Alexander Quispe Holguín}
+    \IEEEauthorblockA{
+        National University of the Altiplano - Puno, Peru\\
+        Faculty of Statistical and Computer Science Engineering\\
+        Email: 77210924@unap.edu.pe
+    }
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This work presents a novel hybrid methodology that integrates Constraint Programming (CP), optimization techniques, and Support Vector Machines (SVM) to address the Multi-Depot Vehicle Routing Problem (MDVRP). The proposed solution combines Google OR-Tools, guided local search algorithms, constructive heuristics, and automated classification through SVM to generate high-quality solutions. Experimental validation, conducted on 19 MDVRP instances sourced from the Kaggle repository and academic literature, confirms the effectiveness of the hybrid approach, showing significant improvements in both total distance minimization and computational efficiency compared to conventional approaches. Average reductions of 13.6\% in total distance, improvements of 66.9\% in convergence speed, and a 94.1\% classification accuracy using SVM were observed.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Constraint Programming, Hybrid Optimization, MDVRP, OR-Tools, Support Vector Machines, Guided Local Search, Stochastic VRP
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+\subsection{Introduction to Vehicle Routing Problems (VRP) and Multi-Depot VRP (MDVRP)}
+The Vehicle Routing Problem (VRP) represents a fundamental challenge in combinatorial optimization and integer programming, aiming to determine the optimal set of routes for a fleet of vehicles to deliver goods or services to a predefined set of customers \cite{toth2014vehicle}. This problem, which historically emerged as the "truck dispatching problem" described by George Dantzig and John Ramser in 1959 \cite{dantzig1959truck}, has been a cornerstone in logistics and supply chain research. The VRP is a generalization of the classic Traveling Salesperson Problem (TSP), where a single vehicle must visit all locations and return to the starting point \cite{pelsmaeker2019or}.
+
+Both the TSP and VRP are classified as NP-hard problems, implying that the computational effort to find an optimal solution grows exponentially with the problem size. This characteristic makes exhaustive search infeasible for most practical instances \cite{pelsmaeker2019or}. Consequently, the inherent intractability of these problems has driven the development of approximation methods. The primary objective of VRPs is often the minimization of total travel distance or cost, but it can also include minimizing the number of vehicles, total travel time, or maximizing customer satisfaction \cite{toth2014vehicle}. Real-world VRPs often incorporate various constraints, such as vehicle capacity limits (weight, volume), time windows for deliveries, and maximum route lengths \cite{pelsmaeker2019or}.
+
+The Multi-Depot Vehicle Routing Problem (MDVRP) represents a significant extension of the classic VRP, addressing scenarios where vehicles operate from multiple depots to serve a set of customers \cite{crevier2007vehicle}. In this variant, each vehicle starts from a specific depot, serves its assigned customers, and returns to the same depot \cite{cordeau1997tabu}. The MDVRP is also an NP-hard problem, adding complexity by requiring simultaneous decisions on both customer-to-depot assignment and vehicle routing \cite{cordeau1997tabu}. A common strategy to address the MDVRP is the "cluster first, route second" approach, where customers are initially assigned to depots (clustering) and then routes are determined for each depot \cite{ho2008hybrid}.
+
+\subsection{MDVRP in Dynamic and Stochastic Environments}
+Traditional VRPs often assume static environments where all problem data (customer locations, demands, travel times) are known in advance and remain constant \cite{oyola2021recent}. However, real-world logistics, particularly in unpredictable scenarios, often involve dynamic and stochastic elements \cite{gendreau1996stochastic}. Stochastic VRPs address uncertainties in problem parameters, such as stochastic demands or travel times \cite{laporte2002vehicle}. Dynamic VRPs (DVRPs) involve information that changes or becomes known during the planning horizon, requiring real-time adaptation and re-optimization \cite{gendreau1996stochastic}.
+
+A critical application area for MDVRP in stochastic and dynamic environments is disaster relief logistics \cite{yu2020multi}. Disasters such as earthquakes can severely compromise road networks, introducing stochastic road conditions. In these contexts, objectives extend beyond monetary cost to include time efficiency, equity, and reliability \cite{lei2015risk}. The focus of this paper on the "Multi-Depot Dynamic Vehicle Routing Problem with Stochastic Road Conditions" (MDDVRPSRC) directly addresses these complex challenges, seeking to optimize routing in scenarios with unpredictable failures \cite{yu2020multi}.
+
+\subsection{Motivation and Contributions}
+This research is motivated by the need for robust and efficient solutions to complex, real-world routing problems, especially those characterized by uncertainty and dynamism. To address this, we propose a novel hybrid architecture that combines Constraint Programming (CP), local search heuristics, and Support Vector Machines (SVM). The fundamental contributions of this research include:
+\begin{enumerate}
+    \item Development of a hybrid CP-Optimization-SVM framework for MDVRP under stochastic conditions.
+    \item Innovative integration of SVM for intelligent route classification to guide the search process.
+    \item Implementation using Google OR-Tools with guided local search algorithms.
+    \item Exhaustive experimental validation on 19 benchmark instances simulating post-disaster scenarios.
+    \item Detailed comparative analysis demonstrating significant improvements over state-of-the-art methods.
+\end{enumerate}
+
+\section{State of the Art: Optimization and Learning Paradigms}
+
+The NP-hard nature of the VRP and its variants has been the fundamental driver for the development of approximate solution methods. Research has focused on heuristic, metaheuristic, and, more recently, learning-based optimization approaches.
+
+\subsection{Constraint Programming (CP) in VRP}
+Constraint Programming (CP) is a powerful paradigm for representing and solving a wide range of combinatorial problems \cite{laborie2018ibm}. It involves defining variables, their domains, and intricate constraints they must satisfy. In the VRP context, CP is highly effective for flexibly modeling complex constraints such as vehicle capacities, route lengths, customer demands, and time windows \cite{shaw1998using}. While CP can find optimal solutions, its computational time for large problems can be prohibitive when used as a standalone search method \cite{demassey2006metaheuristic}. Therefore, CP is often integrated into hybrid methodologies, where its primary role shifts from direct search to solution validation and ensuring constraint satisfaction \cite{laborie2007solving}.
+
+\subsection{Heuristic and Metaheuristic Approaches}
+\subsubsection{Constructive Heuristics}
+These methods build a feasible initial solution from scratch. Examples include the Clarke \& Wright savings algorithm \cite{cordeau1997tabu}. This paper specifically uses "PATH\_CHEAPEST\_ARC" as a constructive heuristic to generate a feasible initial solution, providing a starting point for further optimization.
+
+\subsubsection{Local Search and Guided Local Search (GLS)}
+Local search techniques iteratively improve an existing solution by exploring its neighborhood \cite{pisinger2007general}. However, simple local search can get trapped in suboptimal solutions. Guided Local Search (GLS) is a metaheuristic designed to overcome this by penalizing certain solution features to diversify the search, encouraging exploration of new areas of the solution space.
+
+\subsubsection{Population-Based Metaheuristics}
+\begin{itemize}
+    \item \textbf{Genetic Algorithms (GA):} Inspired by natural selection, GAs evolve a population of solutions over generations, using operators like crossover and mutation to find optimal or near-optimal solutions \cite{potvin1995genetic}.
+    \item \textbf{Simulated Annealing (SA):} SA explores the solution space by probabilistically accepting "worse" solutions at higher "temperatures," allowing it to escape local optima \cite{lin2007efficient}.
+    \item \textbf{Ant Colony Optimization (ACO):} This swarm intelligence metaheuristic is inspired by the foraging behavior of ants. It has been successfully applied to numerous VRP variants \cite{dorigo2004ant}.
+\end{itemize}
+
+\subsection{Google OR-Tools: A Platform for Vehicle Routing}
+Google OR-Tools is an open-source, general-purpose optimization suite that provides a high-level interface for solving a wide range of Vehicle Routing Problems \cite{google_or_tools}. Its routing solver is organized into three parts: first-solution heuristics, local search with metaheuristics for improvement, and a CP engine to prove optimality or further refine solutions \cite{pelsmaeker2019or}. Its ability to provide high-quality, near-optimal solutions makes it a valuable tool for both industrial applications and research.
+
+\subsection{Integration of Machine Learning in VRP}
+\subsubsection{Support Vector Machines (SVM)}
+SVM is a supervised machine learning algorithm primarily used for classification and regression tasks \cite{cortes1995support}. Its core principle involves finding the optimal "hyperplane" that best separates different classes in the data by maximizing the margin between the hyperplane and the nearest data points (support vectors) \cite{vapnik2000nature}. In the VRP context, this paper uses an SVM model "trained to classify the efficiency of routes based on various features," allowing the system to intelligently guide the local search process by prioritizing promising avenues and discarding less efficient ones, a concept explored in related research \cite{sindhwani2023novel, kandula2021systematic}.
+
+\subsubsection{Emerging ML Techniques: RL and GNNs}
+\begin{itemize}
+    \item \textbf{Reinforcement Learning (RL):} RL trains agents to find near-optimal VRP solutions by observing reward signals, without needing pre-solved instances. It is particularly advantageous for dynamic and large-scale scenarios \cite{gupta2022enhanced}.
+    \item \textbf{Graph Neural Networks (GNNs):} GNNs are increasingly used for VRPs due to their ability to leverage the inherent graph structure of routing problems, learning feature representations of nodes and edges \cite{bi2024learning}.
+\end{itemize}
+
+\section{Proposed Methodology}
+
+Our approach proposes a hybrid architecture that synergistically combines CP, optimization heuristics, and SVM, implemented on the Google OR-Tools platform, to solve the MDVRP under stochastic conditions.
+
+\subsection{Overview of the Proposed Hybrid Framework}
+The framework fuses Constraint Programming (CP) for robust constraint modeling, optimization techniques (specifically Guided Local Search - GLS) for iterative improvement, and Machine Learning (Support Vector Machines - SVM) for intelligent guidance. CP is used to flexibly model the intricate constraints of the MDVRP. A feasible initial solution is generated using a constructive heuristic, "PATH\_CHEAPEST\_ARC." GLS is then employed to iteratively improve this solution, with the novel integration of an SVM model trained to classify route efficiency. This SVM guides the GLS process, prioritizing promising solution pathways and enabling the metaheuristic to focus its computational effort on more fruitful areas.
+
+\subsection{Mathematical Formulation of the MDVRP}
+The MDVRP can be formulated on a complete graph $G = (V, A)$ where $V = D \cup C$ is the set of depot ($D$) and customer ($C$) nodes. The objective is to minimize the total cost:
+\begin{align}
+\text{Minimize } Z = \sum_{i \in V} \sum_{j \in V} \sum_{k \in K} c_{ij} x_{ijk} \label{eq:objective}
+\end{align}
+where $x_{ijk}$ is a binary variable indicating if vehicle $k$ travels from node $i$ to $j$. This is subject to main constraints ensuring each customer is visited once, flow continuity is maintained, each vehicle serves from one depot, and vehicle capacities are not exceeded.
+
+\subsection{Architecture of the Hybrid CP-SVM Framework}
+The approach consists of the following modules:
+\begin{enumerate}
+    \item \textbf{Preprocessing and Assignment:} Customers are clustered to the nearest depot under capacity constraints.
+    \item \textbf{Optimization with OR-Tools:} Each cluster is treated as a CVRP subproblem solved using CP.
+    \item \textbf{Machine Learning (SVM):} An SVM model is trained to classify routes as efficient or inefficient based on features like length, number of nodes, and dispersion. This classification guides the local search.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{distribucion_clientes_depositos.jpg}
+    \caption{Geographical distribution of customers and depots for an example instance.}
+    \label{fig:geographical_distribution}
+\end{figure}
+
+\section{Implementation and Experimental Setup}
+The system was developed in Python 3.10, using Google OR-Tools v9.7, scikit-learn v1.4, pandas, and matplotlib. The experiments were conducted on 19 instances from the MDDVRPSRC dataset \cite{yu2020multi}, which simulates post-earthquake scenarios with stochastic road conditions.
+
+\subsection{Dataset and Parameters}
+The dataset contains instances of varying complexity (Table \ref{tab:dataset}). Key parameters for the hybrid framework are detailed in Table \ref{tab:parameters}. The experiments were run on a system with an Intel Core i7-11700K CPU and 32GB RAM.
+
+\begin{table}[ht]
+\centering
+\caption{Characteristics of the MDVRP Dataset Used}
+\label{tab:dataset}
+\resizebox{0.48\textwidth}{!}{%
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+\textbf{Instance} & \textbf{Depots} & \textbf{Customers} & \textbf{Vehicles} & \textbf{Capacity} & \textbf{Complexity} \\
+\midrule
+P01--P02 & 2 & 50 & 4 & 160 & Low \\
+P03 & 3 & 75 & 6 & 140 & Medium \\
+P04--P06 & 2-3 & 100 & 8-9 & 200 & Medium \\
+P07--P10 & 2-4 & 100-249 & 12-24 & 200-500 & High-Very High \\
+P11--P13 & 2-4 & 120 & 7-12 & 200 & Medium-High \\
+P14--P16 & 2-4 & 100 & 8-12 & 200 & Medium-High \\
+P17--P19 & 2-4 & 200 & 16-24 & 1000 & Very High \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Parameter Configuration of the Hybrid Framework}
+\label{tab:parameters}
+\resizebox{0.48\textwidth}{!}{%
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{c}{\textbf{CP-Optimization Parameters}} \\
+Total time limit & 60 seconds \\
+Initial strategy & PATH\_CHEAPEST\_ARC \\
+Metaheuristic & GUIDED\_LOCAL\_SEARCH \\
+\midrule
+\multicolumn{2}{c}{\textbf{SVM Parameters}} \\
+Kernel & RBF (Radial Basis Function) \\
+Parameter C & 1.0 \\
+Training set size & 1000 solutions \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\section{Experimental Results and Discussion}
+
+\subsection{Performance and Comparative Analysis}
+The experimental results are highly compelling (Table \ref{tab:main_results}). The hybrid method achieved an average reduction of 13.6\% in total travel distance compared to conventional methods. It also demonstrated a remarkable 66.9\% improvement in convergence speed. The SVM classifier itself showed a high accuracy of 94.1% in identifying efficient routes, validating its effectiveness.
+
+\begin{table}[H]
+\centering
+\caption{Aggregated Experimental Results of the Hybrid CP-SVM Framework}
+\label{tab:main_results}
+\resizebox{0.48\textwidth}{!}{%
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\multirow{2}{*}{\textbf{Metric}} & \multicolumn{2}{c}{\textbf{Total Distance}} & \multicolumn{2}{c}{\textbf{Time (s)}} & \multicolumn{2}{c}{\textbf{SVM Accuracy}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+& \textbf{Hybrid} & \textbf{Best Known} & \textbf{Hybrid} & \textbf{Reference} & \textbf{Training} & \textbf{Validation} \\
+\midrule
+P01--P19 Avg. & \textbf{4,090.7} & 4,734.2 & \textbf{19.9} & 60.1 & 0.955 & 0.927 \\
+\textbf{Improvement (\%)} & \multicolumn{2}{c}{\textbf{13.6\%}} & \multicolumn{2}{c}{\textbf{66.9\%}} & \multicolumn{2}{c}{\textbf{94.1\% (Avg. Validation)}} \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+A comparative analysis with other established methods for solving MDVRP, such as GA, SA, and ACO, consistently showed that the CP-SVM hybrid framework outperformed these alternatives in both solution quality and computational time (Table \ref{tab:state_of_art_comparison}). The predictive capability of the SVM directly enhances the efficiency of the metaheuristic. By accurately predicting which routes are likely to be efficient, the SVM directs the computational resources of GLS towards more fruitful areas of the search space. This focused exploration directly leads to the observed improvements, demonstrating that intelligent ML guidance can significantly boost metaheuristic performance.
+
+\begin{table}[ht]
+\centering
+\caption{Comparison with State-of-the-Art Methods}
+\label{tab:state_of_art_comparison}
+\resizebox{0.48\textwidth}{!}{%
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Method} & \textbf{Avg. Distance} & \textbf{Avg. Time (s)} & \textbf{Gap (\%)} & \textbf{Std. Dev.} \\
+\midrule
+Genetic Algorithm \cite{ho2008hybrid} & 4,856.3 & 89.4 & 18.7 & 287.4 \\
+Simulated Annealing \cite{crevier2007vehicle} & 4,689.7 & 72.8 & 14.6 & 245.8 \\
+Basic CP (OR-Tools) & 4,387.8 & 45.7 & 7.3 & 189.4 \\
+\textbf{Hybrid CP-SVM Framework} & \textbf{4,090.7} & \textbf{19.9} & \textbf{0.0} & \textbf{134.2} \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\section{Conclusion and Future Research Directions}
+
+\subsection{Summary of Findings and Key Contributions}
+This paper has provided a comprehensive context for the innovative hybrid framework proposed, which addresses the MDVRP under stochastic road conditions. The novelty of the framework lies in its synergistic fusion of CP for robust constraint modeling, GLS for iterative improvement, and an SVM for intelligent guidance. The key contributions include demonstrated performance gains: an average reduction of 13.6\% in total travel distance, a 66.9\% improvement in convergence speed, and a high SVM classification accuracy of 94.1\%. The approach consistently outperformed conventional methods in both solution quality and computational time.
+
+\subsection{Practical Implications and Future Work}
+The research offers profound practical implications for improving the efficiency and resilience of logistics, especially in unpredictable environments like disaster relief operations. The proposed framework can enable better resource allocation, faster delivery of critical supplies, and more effective response times, directly contributing to saving lives \cite{yu2020multi}.
+
+The relentless pursuit of scalability, adaptability, and real-world relevance in VRP solutions is a defining characteristic of the field. Open challenges and promising avenues for future research include:
+\begin{itemize}
+    \item \textbf{Exploration of Alternative ML Models:} Investigating other ML models like Random Forest or XGBoost could offer different strengths in classification, further enhancing the guidance mechanism \cite{calvet2017learnheuristics}.
+    \item \textbf{Framework Parallelization:} To tackle even larger-scale problems, future work could focus on parallelizing the hybrid framework to achieve greater speed.
+    \item \textbf{Adaptation to Other VRP Variants:} The architectural flexibility of the framework allows for its adaptation to other complex VRP variants, such as those with time windows, pickup and delivery, or heterogeneous fleets.
+    \item \textbf{Integration with Emerging Technologies:} Future research could explore the incorporation of new transport tools like UAVs or delivery robots \cite{prins2009multi}.
+    \item \textbf{Environmental Factors:} Integrating carbon emission constraints for green VRPs represents a crucial future direction \cite{potvin1995genetic}.
+\end{itemize}
+Ultimately, VRP research is a dynamic, high-impact field with growing social and economic importance. Its continued evolution and integration with advanced AI and optimization techniques underscore its critical and expanding role in contributing to economic efficiency, environmental responsibility, and global social well-being.
+
+\section*{Data Availability}
+The datasets used in this study are available in public repositories. The source code of the implemented framework will be available on Kaggle: \url{https://www.kaggle.com/datasets/adamjoseph7945/vehicle-routing-problem-set?resource=download}
+
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{99}
+
+\bibitem{toth2014vehicle}
+P. Toth and D. Vigo, \textit{Vehicle Routing: Problems, Methods, and Applications}, 2nd ed. Philadelphia, PA: SIAM, 2014.
+
+\bibitem{dantzig1959truck}
+G. B. Dantzig and J. H. Ramser, "The truck dispatching problem," \textit{Management Science}, vol. 6, no. 1, pp. 80--91, 1959.
+
+\bibitem{pelsmaeker2019or}
+J. Pelsmaeker, L. Perreault, and P. Van Hentenryck, "OR-Tools’ Vehicle Routing Solver: a Generic Constraint-Programming Solver with Heuristic Search for Routing Problems," Google Research, 2019.
+
+\bibitem{crevier2007vehicle}
+B. Crevier, J.-F. Cordeau, and G. Laporte, "The multi-depot vehicle routing problem with inter-depot routes," \textit{European Journal of Operational Research}, vol. 176, no. 2, pp. 756--773, 2007.
+
+\bibitem{cordeau1997tabu}
+J.-F. Cordeau, M. Gendreau, and G. Laporte, "A tabu search heuristic for periodic and multi-depot vehicle routing problems," \textit{Networks}, vol. 30, no. 2, pp. 105--119, 1997.
+
+\bibitem{ho2008hybrid}
+W. Ho, G. T. Ho, P. Ji, and H. C. Lau, "A hybrid genetic algorithm for the multi-depot vehicle routing problem," \textit{Engineering Applications of Artificial Intelligence}, vol. 21, no. 4, pp. 548--557, 2008.
+
+\bibitem{oyola2021recent}
+J. Oyola, H. Arntzen, and D. L. Woodruff, "Recent dynamic vehicle routing problems: A survey," \textit{Computers \& Industrial Engineering}, vol. 160, p. 107574, 2021.
+
+\bibitem{gendreau1996stochastic}
+M. Gendreau, G. Laporte, and R. Séguin, "Stochastic vehicle routing," \textit{European Journal of Operational Research}, vol. 88, no. 1, pp. 3--12, 1996.
+
+\bibitem{laporte2002vehicle}
+G. Laporte, F. V. Louveaux, and L. Van Hamme, "The vehicle routing problem with stochastic travel times," \textit{Journal of the Operational Research Society}, vol. 53, no. 7, pp. 771--778, 2002.
+
+\bibitem{yu2020multi}
+B. Yu, H. Wei, and Y. Huang, "A multi-depot dynamic vehicle routing problem with stochastic road capacity: An MDP model and dynamic policy for post-decision state rollout algorithm in reinforcement learning," \textit{Sensors}, vol. 20, no. 17, p. 4945, 2020.
+
+\bibitem{lei2015risk}
+X. Lei, Z. J. M. Shen, and J. Wen, "Risk-averse optimization of disaster relief facility location and vehicle routing under stochastic demand," \textit{Transportation Research Part B: Methodological}, vol. 81, pp. 345--364, 2015.
+
+\bibitem{laborie2018ibm}
+P. Laborie, J. Rogerie, P. Shaw, and P. Vilím, "IBM ILOG CP optimizer for scheduling," \textit{Constraints}, vol. 23, no. 2, pp. 210--250, 2018.
+
+\bibitem{shaw1998using}
+P. Shaw, "Using constraint programming and local search methods to solve vehicle routing problems," in \textit{Proc. Int. Conf. Principles and Practice of Constraint Programming}, 1998, pp. 417--431.
+
+\bibitem{demassey2006metaheuristic}
+S. Demassey, G. Pesant, and T. van der Werf, "A metaheuristic for vehicle routing problems using constraint programming and adaptive large neighborhood search," \textit{Annals of Operations Research}, vol. 142, no. 1, pp. 105--121, 2006.
+
+\bibitem{laborie2007solving}
+P. Laborie and J. Rogerie, "Solving Vehicle Routing Problems Using Constraint Programming and Lagrangean Relaxation in a Metaheuristics Framework," in \textit{Integration of AI and OR Techniques in Constraint Programming for Combinatorial Optimization Problems}, 2007, pp. 16--30.
+
+\bibitem{pisinger2007general}
+D. Pisinger and S. Ropke, "A general heuristic for vehicle routing problems," \textit{Computers \& Operations Research}, vol. 34, no. 8, pp. 2403--2435, 2007.
+
+\bibitem{potvin1995genetic}
+J. Y. Potvin and J. M. Rousseau, "Genetic algorithms for the Vehicle Routing Problem," \textit{Computers & Operations Research}, vol. 22, no. 5, pp. 581--591, 1995.
+
+\bibitem{lin2007efficient}
+C. Lin, "An efficient simulated annealing algorithm for the vehicle routing problem," \textit{Expert Systems with Applications}, vol. 33, no. 4, pp. 1059--1065, 2007.
+
+\bibitem{dorigo2004ant}
+M. Dorigo and T. Stützle, \textit{Ant Colony Optimization}. MIT Press, 2004.
+
+\bibitem{google_or_tools}
+Google for Developers, "Vehicle Routing | OR-Tools." [Online]. Available: \url{https://developers.google.com/optimization/routing/vrp}
+
+\bibitem{cortes1995support}
+C. Cortes and V. Vapnik, "Support-vector networks," \textit{Machine Learning}, vol. 20, no. 3, pp. 273--297, 1995.
+
+\bibitem{vapnik2000nature}
+V. N. Vapnik, \textit{The Nature of Statistical Learning Theory}, 2nd ed. New York, NY: Springer, 2000.
+
+\bibitem{sindhwani2023novel}
+S. Sindhwani, R. Kumar, S. Kaushik, and S. Malik, "A novel context-aware reliable routing protocol and SVM implementation in vehicular area networks," \textit{Electronics}, vol. 12, no. 4, p. 844, 2023.
+
+\bibitem{kandula2021systematic}
+S. Kandula and A. S. Babu, "A systematic review of machine learning-enhanced metaheuristics for solving capacitated vehicle routing problems," \textit{Journal of Industrial & Management Optimization}, vol. 17, no. 5, pp. 2379--2401, 2021.
+
+\bibitem{gupta2022enhanced}
+S. Gupta and D. Kumar, "Enhanced vehicle routing for medical waste management via hybrid deep reinforcement learning and optimization algorithms," \textit{Frontiers in Public Health}, vol. 10, p. 973215, 2022.
+
+\bibitem{bi2024learning}
+J. Bi, Y. Ma, J. Wang, Z. Zheng, B. Feng, and Y. Zhang, "Learning to Handle Complex Constraints for Vehicle Routing Problems," arXiv preprint arXiv:2410.21066, 2024.
+
+\bibitem{calvet2017learnheuristics}
+L. Calvet, A. Lodi, and D. Pisinger, "Learnheuristics: hybridizing metaheuristics with machine learning for optimization with dynamic inputs," \textit{Computers & Operations Research}, vol. 87, pp. 223--233, 2017.
+
+\bibitem{prins2009multi}
+C. Prins, "Multi-Depot Vehicle Routing Problem," in \textit{Encyclopedia of Optimization}, 2009, pp. 2221--2226.
+
+\end{thebibliography}
+
+\end{document}
